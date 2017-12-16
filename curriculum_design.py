@@ -1,20 +1,28 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# date: 2017-12-8
-# author: fszhuangb
+# date: from 2017-12-8 to 2017-12-11
+__author__ = 'fszhuangb'
 # this is my curriculum design
 # collecting coupons
 
-'''
-   There are 52 cards and we should stimulate getting 4 cards
+"""
+   There are 52 cards and we should stimulate
+   getting 4 cards with different colors
    1. print out the 4 cards and the number of picks
    2. use turtle to draw the 4 cards
-'''
+"""
+
 
 import time
 import random
 import turtle as do
+import sys
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWidgets import QMainWindow, QMessageBox, QLabel, QGridLayout, QWidget, QPushButton
+from PyQt5.QtCore import QSize, QCoreApplication
+from PyQt5.QtGui import QIcon
+
 
 # use a dict to put all cards : heart♥(a->10, J,Q,K)
 #                               spade♠(a->10, J,Q,K)
@@ -25,8 +33,8 @@ import turtle as do
 poker_dict = {'the arc of hearts': 1,
               '2 of hearts': 2,
               '3 of hearts': 3,
-              '4 of hearts': 4,
               '5 of hearts': 5,
+              '4 of hearts': 4,
               '6 of hearts': 6,
               '7 of hearts': 7,
               '8 of hearts': 8,
@@ -76,6 +84,40 @@ poker_dict = {'the arc of hearts': 1,
               'the king of diamonds': 'k'}
 
 
+# This is a HelloWindow class that I did, inherit from QMainWindow
+class HelloWindow(QMainWindow):
+    def __init__(self):
+        QMainWindow.__init__(self)
+
+        self.setMinimumSize(QSize(640, 480))
+        self.move(0, 0)
+        self.setWindowTitle("a poker game")
+        self.setWindowIcon(QIcon("f:/python/test.gif"))
+
+        centralWidget = QWidget(self)
+        self.setCentralWidget(centralWidget)
+
+        gridLayout = QGridLayout(self)
+        centralWidget.setLayout(gridLayout)
+
+        title = QLabel("<p style='font-size:14px; font-family: Lucida Calligraphy;'><b>You have fetched: %s\n</b></p>" % new_list[0], self)
+        title2 = QLabel("<p style='font-size:14px; font-family: Lucida Calligraphy;'><b>%s\n</b></p>" % new_list[1], self)
+        title3 = QLabel("<p style='font-size:14px; font-family: Lucida Calligraphy;'><b>%s\n</b></p>" % new_list[2], self)
+        title4 = QLabel("<p style='font-size:14px; font-family: Lucida Calligraphy;'><b>%s\n</b></p>" % new_list[3], self)
+        title5 = QLabel("<p style='color:blue; font-size:16px; font-family: Georgia;'><b>Numbers of pick: %d</b></p>" % numbers_of_pick, self)
+
+        title.setAlignment(QtCore.Qt.AlignCenter)
+        title2.setAlignment(QtCore.Qt.AlignCenter)
+        title3.setAlignment(QtCore.Qt.AlignCenter)
+        title4.setAlignment(QtCore.Qt.AlignCenter)
+        title5.setAlignment(QtCore.Qt.AlignCenter)
+        gridLayout.addWidget(title)
+        gridLayout.addWidget(title2)
+        gridLayout.addWidget(title3)
+        gridLayout.addWidget(title4)
+        gridLayout.addWidget(title5)
+
+
 def fetch_cards(user_dict):
     '''
         this function can fetch different 4 words
@@ -116,7 +158,7 @@ def fetch_cards(user_dict):
                 continue
         else:
             continue
-    return different_cards_list
+    return different_cards_list, numbers_of_pick
 
 
 def generate_rectangle(x, y, length):
@@ -150,15 +192,15 @@ def generate_heart(x, y, size, start_angle):
 
 
 def generate_club(x, y, size, start_angle):
-    '''
+    """
        This fuction generate club♣
        parameters:
        x: x coordinate
        y: y coordinate
        r: it is the size of the function
        start_angle: the club's direction
-    '''
-    do.speed(10)
+    """
+    do.speed(20)
     do.penup()
     do.setheading(start_angle)
     do.pensize(1)
@@ -202,7 +244,7 @@ def generate_diamond(x, y, size, start_angle):
                         font=("Arial", size, "normal"))
 
 
-def generate_A(x, y, size, start_angle):
+def generate_A(x, y, size, start_angle, color='red'):
     '''
        this function generate A
        parameter:
@@ -213,6 +255,7 @@ def generate_A(x, y, size, start_angle):
     '''
     do.penup()
     do.goto(x, y)
+    do.pencolor(color)
     do.pensize(3)
     do.setheading(start_angle)
     do.pendown()
@@ -222,6 +265,7 @@ def generate_A(x, y, size, start_angle):
     do.bk(size * 2 / 5)
     do.right(110)
     do.fd(size * 2 / 5)
+    do.pencolor('black')
 
 
 def generate_digital(number, x, y, size, start_angle, color='black'):
@@ -261,8 +305,8 @@ def draw_card(keys, value):
         generate_club(70, 180, 4, 0)
         generate_club(175, 70, 4, -180)
         if value == 1:
-            generate_A(65, 200, 20, 70)
-            generate_A(180, 50, 20, -110)
+            generate_A(65, 200, 20, 70, color='black')
+            generate_A(180, 50, 20, -110, color='black')
             generate_club(105, 80, 15, 0)
         elif value == 2:
             generate_club(126, 70, 7, -180)
@@ -376,15 +420,15 @@ def draw_card(keys, value):
         generate_spade(-180, -190, 30, 0)
         generate_spade(-60, -55, 30, -180)
         if value == 1:
-            generate_A(-187, 200, 20, 70)
-            generate_A(-53, 50, 20, -110)
+            generate_A(-187, 200, 20, 70, color='black')
+            generate_A(-53, 50, 20, -110, color='black')
             generate_spade(-120, -128, 60, 0)
             # do.mainloop()
         elif value == 2:
             generate_spade(-126, -53, 60, -180)
             generate_spade(-126, -187, 60, 0)
-            generate_digital(2, -176, -212, 20, 0)
-            generate_digital(2, -62, -35, 20, -180)
+            generate_digital(2, -179, -212, 20, 0)
+            generate_digital(2, -60, -35, 20, -180)
             # do.mainloop()
         elif value == 3:
             generate_spade(-124, -190, 40, 0)
@@ -489,24 +533,24 @@ def draw_card(keys, value):
         do.speed(10)
         generate_rectangle(-190, -230, 210)
         generate_heart(-173, 55, 25, 0)
-        generate_heart(-73, 190, 25, -180)
+        generate_heart(-65, 190, 25, -180)
         if value == 1:
-            generate_A(-167, -40, 20, 70)
-            generate_A(-79, -200, 20, -110)
+            generate_A(-180, -42, 20, 70)
+            generate_A(-59, -200, 20, -110)
             generate_heart(-120, 128, 60, 0)
             # do.mainloop()
         elif value == 2:
             generate_heart(-126, 170, 60, -180,)
             generate_heart(-126, 70, 60, 0)
             generate_digital(2, -175, 35, 20, 0, color='red')
-            generate_digital(2, -73, 212, 20, -180, color='red')
+            generate_digital(2, -65, 212, 20, -180, color='red')
             # do.mainloop()
         elif value == 3:
             generate_heart(-125, 190, 40, 0)
             generate_heart(-125, 130, 40, 0)
             generate_heart(-125, 70, 40, -180)
             generate_digital(3, -175, 35, 20, 0, color='red')
-            generate_digital(3, -73, 212, 20, -180, color='red')
+            generate_digital(3, -65, 212, 20, -180, color='red')
             # do.mainloop()
         elif value == 4:
             generate_heart(-150, 180, 40, 0)
@@ -514,7 +558,7 @@ def draw_card(keys, value):
             generate_heart(-150, 60, 40, -180)
             generate_heart(-100, 60, 40, -180)
             generate_digital(4, -175, 35, 20, 0, color='red')
-            generate_digital(4, -73, 212, 20, -180, color='red')
+            generate_digital(4, -65, 212, 20, -180, color='red')
             # do.mainloop()
         elif value == 5:
             generate_heart(-150, 170, 40, 0)
@@ -523,7 +567,7 @@ def draw_card(keys, value):
             generate_heart(-90, 70, 40, -180)
             generate_heart(-120, 130, 40, 0)  # the spade in the middle
             generate_digital(5, -175, 35, 20, 0, color='red')
-            generate_digital(5, -73, 212, 20, -180, color='red')
+            generate_digital(5, -65, 212, 20, -180, color='red')
             # do.mainloop()
         elif value == 6:
             generate_heart(-150, 205, 40, 0)
@@ -532,8 +576,8 @@ def draw_card(keys, value):
             generate_heart(-90, 50, 40, -180)
             generate_heart(-150, 130, 40, 0)
             generate_heart(-90, 130, 40, 0)
-            generate_digital(6, -175, 35, 20, 0, color='red')
-            generate_digital(6, -73, 212, 20, -180, color='red')
+            generate_digital(6, -174, 35, 20, 0, color='red')
+            generate_digital(6, -65, 212, 20, -180, color='red')
             # do.mainloop()
         elif value == 7:
             generate_heart(-150, 205, 40, 0)
@@ -544,7 +588,7 @@ def draw_card(keys, value):
             generate_heart(-90, 130, 40, 0)
             generate_heart(-120, 145, 40, 0)  # the spade in the middle
             generate_digital(7, -175, 35, 20, 0, color='red')
-            generate_digital(7, -73, 212, 20, -180, color='red')
+            generate_digital(7, -65, 212, 20, -180, color='red')
             # do.mainloop()
         elif value == 8:
             generate_heart(-150, 205, 40, 0)
@@ -556,7 +600,7 @@ def draw_card(keys, value):
             generate_heart(-150, 105, 40, -180)
             generate_heart(-90, 105, 40, -180)
             generate_digital(8, -175, 35, 20, 0, color='red')
-            generate_digital(8, -73, 212, 20, -180, color='red')
+            generate_digital(8, -65, 212, 20, -180, color='red')
             # do.mainloop()
         elif value == 9:
             generate_heart(-150, 205, 40, 0)
@@ -569,7 +613,7 @@ def draw_card(keys, value):
             generate_heart(-90, 105, 40, -180)
             generate_heart(-120, 165, 40, 0)  # the spade in the middle
             generate_digital(9, -175, 35, 20, 0, color='red')
-            generate_digital(9, -73, 212, 20, -180, color='red')
+            generate_digital(9, -65, 212, 20, -180, color='red')
             # do.mainloop()
         elif value == 10:
             generate_heart(-150, 195, 36, 0)
@@ -583,44 +627,44 @@ def draw_card(keys, value):
             generate_heart(-120, 165, 36, 0)  # the spade in the middle
             generate_heart(-120, 100, 36, -180)
             generate_digital(10, -175, 35, 18, 0, color='red')
-            generate_digital(10, -73, 212, 18, -180, color='red')
+            generate_digital(10, -63, 212, 18, -180, color='red')
             # do.mainloop()
         elif value == 'j':
             generate_big_char('J', -125, 130, 55, 0, color='red')
             generate_big_char('J', -175, 35, 19, 0, color='red')
-            generate_big_char('J', -73, 212, 19, -180, color='red')
+            generate_big_char('J', -63, 212, 19, -180, color='red')
             # do.mainloop()
         elif value == 'q':
             generate_big_char('Q', -125, 130, 55, 0, color='red')
             generate_big_char('Q', -175, 35, 19, 0, color='red')
-            generate_big_char('Q', -73, 212, 19, -180, color='red')
+            generate_big_char('Q', -63, 212, 19, -180, color='red')
             # do.mainloop()
         elif value == 'k':
             generate_big_char('K', -120, 130, 55, 0, color='red')
             generate_big_char('K', -175, 35, 19, 0, color='red')
-            generate_big_char('K', -73, 212, 19, -180, color='red')
+            generate_big_char('K', -63, 212, 19, -180, color='red')
             # do.mainloop()
     elif 'diamond' in keys:
         do.speed(10)
         generate_rectangle(50, -230, 210)
-        generate_diamond(73, 55, 30, 0)
+        generate_diamond(68, 55, 30, 0, )
         generate_diamond(173, 190, 30, -180)
         if value == 1:
-            generate_A(65, -42, 20, 70)
+            generate_A(60, -42, 20, 70)
             generate_A(180, -200, 20, -110)
             generate_diamond(120, 128, 60, 0)
             # do.mainloop()
         elif value == 2:
             generate_diamond(126, 170, 60, -180,)
             generate_diamond(120, 70, 60, 0)
-            generate_digital(2, 73, 35, 20, 0, color='red')
+            generate_digital(2, 68, 35, 20, 0, color='red')
             generate_digital(2, 175, 212, 20, -180, color='red')
             # do.mainloop()
         elif value == 3:
             generate_diamond(125, 70, 40, 0)
             generate_diamond(125, 130, 40, 0)
             generate_diamond(125, 190, 40, -180)
-            generate_digital(3, 73, 35, 20, 0, color='red')
+            generate_digital(3, 68, 35, 20, 0, color='red')
             generate_digital(3, 175, 212, 20, -180, color='red')
             # do.mainloop()
         elif value == 4:
@@ -628,7 +672,7 @@ def draw_card(keys, value):
             generate_diamond(100, 180, 40, 0)
             generate_diamond(150, 60, 40, -180)
             generate_diamond(100, 60, 40, -180)
-            generate_digital(4, 73, 35, 20, 0, color='red')
+            generate_digital(4, 68, 35, 20, 0, color='red')
             generate_digital(4, 175, 212, 20, -180, color='red')
             # do.mainloop()
         elif value == 5:
@@ -637,7 +681,7 @@ def draw_card(keys, value):
             generate_diamond(150, 70, 40, -180)
             generate_diamond(90, 70, 40, -180)
             generate_diamond(120, 130, 40, 0)  # the spade in the middle
-            generate_digital(5, 73, 35, 20, 0, color='red')
+            generate_digital(5, 68, 35, 20, 0, color='red')
             generate_digital(5, 175, 212, 20, -180, color='red')
             # do.mainloop()
         elif value == 6:
@@ -647,7 +691,7 @@ def draw_card(keys, value):
             generate_diamond(90, 50, 40, -180)
             generate_diamond(150, 130, 40, 0)
             generate_diamond(90, 130, 40, 0)
-            generate_digital(6, 73, 35, 20, 0, color='red')
+            generate_digital(6, 68, 35, 20, 0, color='red')
             generate_digital(6, 175, 212, 20, -180, color='red')
             # do.mainloop()
         elif value == 7:
@@ -658,7 +702,7 @@ def draw_card(keys, value):
             generate_diamond(150, 130, 40, 0)
             generate_diamond(90, 130, 40, 0)
             generate_diamond(120, 145, 40, 0)  # the spade in the middle
-            generate_digital(7, 73, 35, 20, 0, color='red')
+            generate_digital(7, 68, 35, 20, 0, color='red')
             generate_digital(7, 175, 212, 20, -180, color='red')
             # do.mainloop()
         elif value == 8:
@@ -670,7 +714,7 @@ def draw_card(keys, value):
             generate_diamond(90, 150, 40, 0)
             generate_diamond(150, 105, 40, -180)
             generate_diamond(90, 105, 40, -180)
-            generate_digital(8, 73, 35, 20, 0, color='red')
+            generate_digital(8, 68, 35, 20, 0, color='red')
             generate_digital(8, 175, 212, 20, -180, color='red')
             # do.mainloop()
         elif value == 9:
@@ -683,7 +727,7 @@ def draw_card(keys, value):
             generate_diamond(150, 105, 40, -180)
             generate_diamond(90, 105, 40, -180)
             generate_diamond(120, 85, 40, 0)  # the diamond in the middle
-            generate_digital(9, 73, 35, 20, 0, color='red')
+            generate_digital(9, 68, 35, 20, 0, color='red')
             generate_digital(9, 175, 212, 20, -180, color='red')
             # do.mainloop()
         elif value == 10:
@@ -697,31 +741,37 @@ def draw_card(keys, value):
             generate_diamond(90, 105, 40, -180)
             generate_diamond(120, 165, 40, 0)  # the spade in the middle
             generate_diamond(120, 100, 40, -180)
-            generate_digital(10, 73, 35, 18, 0, color='red')
-            generate_digital(10, 175, 212, 18, -180, color='red')
+            generate_digital(10, 65, 35, 18, 0, color='red')
+            generate_digital(10, 179, 212, 18, -180, color='red')
             # do.mainloop()
         elif value == 'j':
             generate_big_char('J', 115, 130, 55, 0, color='red')
-            generate_big_char('J', 73, 35, 19, 0, color='red')
+            generate_big_char('J', 68, 35, 19, 0, color='red')
             generate_big_char('J', 175, 212, 19, -180, color='red')
             # do.mainloop()
         elif value == 'q':
             generate_big_char('Q', 115, 130, 55, 0, color='red')
-            generate_big_char('Q', 73, 35, 19, 0, color='red')
+            generate_big_char('Q', 68, 35, 19, 0, color='red')
             generate_big_char('Q', 175, 212, 19, -180, color='red')
             # do.mainloop()
         elif value == 'k':
             generate_big_char('K', 115, 130, 55, 0, color='red')
-            generate_big_char('K', 73, 35, 19, 0, color='red')
+            generate_big_char('K', 68, 35, 19, 0, color='red')
             generate_big_char('K', 175, 212, 19, -180, color='red')
             # do.mainloop()
 
 
-new_list = fetch_cards(poker_dict)
+if __name__ == '__main__':
 
-for x in range(4):
-    draw_card(new_list[x], poker_dict[new_list[x]])
-do.mainloop()
+    new_list, numbers_of_pick = fetch_cards(poker_dict)
 
+    app = QtWidgets.QApplication(sys.argv)
+    mainWin = HelloWindow()
+    mainWin.show()
 
-# fetch_cards(poker_dict)
+    for x in range(4):
+        draw_card(new_list[x], poker_dict[new_list[x]])
+    do.mainloop()
+
+    sys.exit(exec())
+
